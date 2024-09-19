@@ -1,5 +1,6 @@
 package com.tasnimt.artsyshop.model;
 
+import com.tasnimt.artsyshop.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

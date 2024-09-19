@@ -1,5 +1,6 @@
 package com.tasnimt.artsyshop.service.category;
 
+import com.tasnimt.artsyshop.exception.AlreadyExistsException;
 import com.tasnimt.artsyshop.exception.ResourceNotFoundException;
 import com.tasnimt.artsyshop.model.Category;
 import com.tasnimt.artsyshop.repository.CategoryRepo;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -19,27 +21,45 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public Category getCategoryByName(String name) {
-        return null;
+    public List<Category> getCategoryByName(String name) {
+        return categoryRepo.findByName(name);
     }
 
     @Override
     public List<Category> getAllCategories() {
-        return List.of();
+        return categoryRepo.findAll();
     }
 
     @Override
     public Category addCategory(Category category) {
-        return null;
+//        return  Optional.of(category).filter(c -> !categoryRepo.existsByName(c.getName()))
+//                .map(categoryRepo :: save)
+//                .orElseThrow(() -> new AlreadyExistsException(category.getName()+" already exists"));
+        // check if category already exists using name
+
+       Category existingCategory = categoryRepo.findByName(category.getName());
+         if (existingCategory != null) {
+              throw new AlreadyExistsException("Category already exists");
+            }
+
+        return categoryRepo.save(category);
     }
 
     @Override
     public Category updateCategory(Category category, Long id) {
-        return null;
+        Optional<Category> categoryOptional = categoryRepo.findById(id);
+        if (categoryOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Category not found");
+        }
+        Category existingCategory = categoryOptional.get();
+        existingCategory.setName(category.getName());
+        return categoryRepo.save(existingCategory);
     }
 
     @Override
     public void deleteCategory(Long id) {
-
+        categoryRepo.findById(id).ifPresentOrElse(categoryRepo::delete, () -> {
+            throw new ResourceNotFoundException("Category not found");
+        });
     }
 }
