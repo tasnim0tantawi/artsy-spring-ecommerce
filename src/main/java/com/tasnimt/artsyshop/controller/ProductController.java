@@ -16,5 +16,6 @@ public class ProductController {
 
     @GetMapping("/")
     public ResponseEntity<ApiResponse> getAllProducts() {
+        return null;
     }
 }
