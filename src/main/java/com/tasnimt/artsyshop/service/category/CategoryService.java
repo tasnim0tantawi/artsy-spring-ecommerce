@@ -21,7 +21,7 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public List<Category> getCategoryByName(String name) {
+    public Category getCategoryByName(String name) {
         return categoryRepo.findByName(name);
     }
 
